@@ -12,7 +12,7 @@ app.get("/", function(req, res) {
   res.render("index", { title: "Happy User", message: "Hello there!" });
 });
 
-app.get("/", (req, res) => {
+app.get("/users", (req, res) => {
   console.log("Route /confirmed users");
   var filesArray = fs.readdirSync("./users");
   console.log(filesArray);
