@@ -9,7 +9,7 @@ app.use(express.static("public"));
 app.set("view engine", "pug");
 
 app.get("/", function(req, res) {
-  res.render("index", { title: "Hey", message: "Hello there!" });
+  res.render("index", { title: "Happy User", message: "Hello there!" });
 });
 
 app.get("/user/create", (req, res) => {
