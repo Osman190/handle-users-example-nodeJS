@@ -5,11 +5,44 @@ var app = express();
 var fs = require("fs");
 
 app.set("views", "./views");
-app.use(express.static("public"));
 app.set("view engine", "pug");
+app.use(express.static("public"));
 
 app.get("/", function(req, res) {
   res.render("index", { title: "Happy User", message: "Hello there!" });
+});
+
+app.get("/", (req, res) => {
+  console.log("Route /confirmed users");
+  var filesArray = fs.readdirSync("./users");
+  console.log(filesArray);
+  var confirmedUsers = [];
+  filesArray.forEach(file => {
+    var readingFile = fs.readFileSync(`./users/${file}`);
+    var user = JSON.parse(readingFile);
+    if (user.status !== "unconfirmed") {
+      confirmedUsers.push(user);
+    }
+  });
+  console.log(confirmedUsers);
+  res.render("listUserConfirmed", {
+    users: confirmedUsers
+  });
+});
+
+app.get("/admin", function(req, res) {
+  console.log("Route /admin");
+  var allUsers = fs.readdirSync("./users");
+  var allList = [];
+  allUsers.forEach(file => {
+    var readingFile = fs.readFileSync(`./users/${file}`);
+    var user = JSON.parse(readingFile);
+    console.log(user.email);
+    allList.push(user);
+  });
+  res.render("allUsers", {
+    userList: allList
+  });
 });
 
 app.get("/user/create", (req, res) => {
@@ -21,7 +54,6 @@ app.get("/user/create", (req, res) => {
     status: "unconfirmed", //default value unconfirmed, every register is first unconfirmed
     session: true //depending on the RememberMe checkbox
   };
-
   fs.writeFile(`./users/${id}.json`, JSON.stringify(obj), function(err) {
     if (err) {
       return console.log(err);
@@ -48,7 +80,6 @@ app.get("/user/verify/:token", (req, res) => {
           if (err) {
             return console.log(err);
           }
-
           console.log("The Email was confirmed!");
           //redirect to /
           res.redirect("/");
